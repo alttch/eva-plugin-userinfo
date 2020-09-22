@@ -5,7 +5,7 @@ key-value storage for extended user information.
 
 ## Installation
 
-This is a single-file plugin, put "userinfo.py" to EVA ICS plugins folder and
+This is a single-file plugin, put "userinfo.py" into EVA ICS plugins folder and
 enjoy
 
 ## Configuration
