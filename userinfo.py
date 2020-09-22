@@ -119,6 +119,7 @@ class APIFuncs(pa.APIX):
         elif name not in rw_fields:
             raise pa.ResourceNotFound(f'field {name}')
         dbconn = get_db()
+        dbt = dbconn.begin()
         r = dbconn.execute(sql('select value from userinfo where '
                                'u=:u and utp=:utp and name=:name'),
                            u=u,
@@ -139,4 +140,5 @@ class APIFuncs(pa.APIX):
                            utp=utp,
                            name=name,
                            value=value)
+        dbt.commit()
         return True
