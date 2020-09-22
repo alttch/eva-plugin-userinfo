@@ -120,12 +120,11 @@ class APIFuncs(pa.APIX):
             raise pa.ResourceNotFound(f'field {name}')
         dbconn = get_db()
         dbt = dbconn.begin()
-        r = dbconn.execute(sql('select value from userinfo where '
+        d = dbconn.execute(sql('select value from userinfo where '
                                'u=:u and utp=:utp and name=:name'),
                            u=u,
                            utp=utp,
-                           name=name)
-        d = r.fetchone()
+                           name=name).fetchone()
         if d is None:
             dbconn.execute(sql('insert into userinfo(u, utp, name, value) '
                                'values (:u, :utp, :name, :value)'),
