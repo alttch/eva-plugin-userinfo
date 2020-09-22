@@ -10,7 +10,7 @@ enjoy
 
 ## Configuration
 
-Example (/opt/eva/etc/<controller>.ini):
+Example (/opt/eva/etc/\<controller\>.ini):
 
 ```ini
 [userinfo]
