@@ -33,11 +33,12 @@ Info database can be shared between controllers / EVA ICS instances.
     * p - user type
     * n - field name
 
-* x_userinfo_set_field(u, p, n) - set user info field
+* x_userinfo_set_field(u, p, n, v) - set user info field
 
     * u - user login (requires master key)
     * p - user type
     * n - field name
+    * v - field value (string)
 
 If user is not specified in params, an API call must be authenticated with
 valid user token and field data is get/set for the current logged in user.
