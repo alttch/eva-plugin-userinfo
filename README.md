@@ -10,7 +10,7 @@ enjoy
 
 ## Configuration
 
-Example:
+Example (/opt/eva/etc/<controller>.ini):
 
 ```ini
 [userinfo]
@@ -27,13 +27,13 @@ Info database can be shared between controllers / EVA ICS instances.
 
 ## Exposed API methods
 
-* x_userinfo_get_field(u, p, n) - get user info field
+* **x\_userinfo\_get\_field**(u, p, n) - get user info field
 
     * u - user login (requires master key)
     * p - user type
     * n - field name
 
-* x_userinfo_set_field(u, p, n, v) - set user info field
+* **x\_userinfo\_set\_field**(u, p, n, v) - set user info field
 
     * u - user login (requires master key)
     * p - user type
