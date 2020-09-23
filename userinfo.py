@@ -24,7 +24,7 @@ logger = pa.get_logger()
 # undocummented thread-local, don't use in own plugins
 def get_db():
     with db_lock:
-        if not g.has('userdb'):
+        if not g.has('x_userinfo_db'):
             g.x_userinfo_db = flags.db.connect()
         else:
             try:
