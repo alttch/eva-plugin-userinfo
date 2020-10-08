@@ -1,7 +1,7 @@
 __author__ = 'Altertech, https://www.altertech.com/'
 __copyright__ = 'Copyright (C) 2012-2020 Altertech'
 __license__ = 'Apache License 2.0'
-__version__ = '0.0.1'
+__version__ = '0.0.2'
 
 import eva.pluginapi as pa
 import sqlalchemy as sa
@@ -100,7 +100,7 @@ class APIFuncs(pa.APIX):
     @pa.api_log_i
     def set_field(self, **kwargs):
         k, u, utp, name, value = pa.parse_function_params(
-            kwargs, 'kupnv', 'S..SSS')
+            kwargs, 'kupnv', 'S..Ss')
         if u is not None:
             if not pa.key_check(k, master=True):
                 raise pa.AccessDenied(
