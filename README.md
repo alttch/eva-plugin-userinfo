@@ -25,18 +25,18 @@ Info database can be shared between controllers / EVA ICS instances.
 
 ## Exposed API methods
 
-* **x\_userinfo\_get\_field**(u, p, n) - get user info field
+* **x\_userinfo\_get**(u, p, n) - get user info field
 
     * u - user login (requires master key)
     * p - user type
     * n - field name
 
-* **x\_userinfo\_set\_field**(u, p, n, v) - set user info field
+* **x\_userinfo\_set**(u, p, n, v) - set user info field
 
     * u - user login (requires master key)
     * p - user type
     * n - field name
-    * v - field value (string)
+    * v - field value (any serializable)
 
 If user is not specified in params, an API call must be authenticated with
 valid user token and field data is get/set for the current logged in user.
