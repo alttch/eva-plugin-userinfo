@@ -1,11 +1,12 @@
 __author__ = 'Altertech, https://www.altertech.com/'
 __copyright__ = 'Copyright (C) 2012-2020 Altertech'
 __license__ = 'Apache License 2.0'
-__version__ = '0.0.2'
+__version__ = '0.1.0'
 
 import eva.pluginapi as pa
 import sqlalchemy as sa
 import threading
+import msgpack
 
 from neotasker import g
 
@@ -21,34 +22,12 @@ rw_fields = []
 logger = pa.get_logger()
 
 
-# undocummented thread-local, don't use in own plugins
-def get_db():
-    with db_lock:
-        if not g.has('x_userinfo_db'):
-            g.x_userinfo_db = flags.db.connect()
-        else:
-            try:
-                g.x_userinfo_db.execute('select 1')
-            except:
-                try:
-                    g.userdb.close()
-                except:
-                    pass
-                g.x_userinfo_db = flags.db.connect()
-        return g.x_userinfo_db
-
-
 def init(config, **kwargs):
     for f in [x.strip() for x in config.get('ro', '').split(',')]:
         ro_fields.append(f)
     for f in [x.strip() for x in config.get('rw', '').split(',')]:
         rw_fields.append(f)
-    from eva.core import create_db_engine, format_db_uri
-    # undocummented internal function, don't use in own plugins
-    db = format_db_uri(config['db'])
-    flags.db = create_db_engine(db)
     logger.debug('userinfo plugin loaded')
-    logger.debug(f'userinfo.db = {db}')
     logger.debug(f'userinfo.ro_fields = {", ".join(ro_fields)}')
     logger.debug(f'userinfo.rw_fields = {", ".join(rw_fields)}')
     pa.register_apix(APIFuncs(), sys_api=True)
@@ -56,13 +35,13 @@ def init(config, **kwargs):
 
 
 def before_start(**kwargs):
-    dbconn = get_db()
+    dbconn = pa.get_userdb()
     meta = sa.MetaData()
-    t_userinfo = sa.Table('userinfo', meta,
+    t_userinfo = sa.Table('plugin_userinfo', meta,
                           sa.Column('u', sa.String(128), primary_key=True),
                           sa.Column('utp', sa.String(32), primary_key=True),
                           sa.Column('name', sa.String(256), primary_key=True),
-                          sa.Column('value', sa.String(256)))
+                          sa.Column('value', sa.LargeBinary))
     try:
         meta.create_all(dbconn)
     except:
@@ -88,14 +67,14 @@ class APIFuncs(pa.APIX):
             raise pa.AccessDenied('user not logged in')
         if utp is None:
             utp = ''
-        dbconn = get_db()
-        r = dbconn.execute(sql('select value from userinfo where '
+        dbconn = pa.get_userdb()
+        r = dbconn.execute(sql('select value from plugin_userinfo where '
                                'u=:u and utp=:utp and name=:name'),
                            u=u,
                            utp=utp,
                            name=name)
         d = r.fetchone()
-        return {name: d.value if d else ''}
+        return {name: msgpack.loads(d.value, raw=False) if d else None}
 
     @pa.api_log_i
     def set_field(self, **kwargs):
@@ -118,22 +97,24 @@ class APIFuncs(pa.APIX):
                     f'field {name} is read-only, master is required to set')
         elif name not in rw_fields:
             raise pa.ResourceNotFound(f'field {name}')
-        dbconn = get_db()
+        dbconn = pa.get_userdb()
         dbt = dbconn.begin()
-        d = dbconn.execute(sql('select value from userinfo where '
+        value = msgpack.dumps(value)
+        d = dbconn.execute(sql('select value from plugin_userinfo where '
                                'u=:u and utp=:utp and name=:name'),
                            u=u,
                            utp=utp,
                            name=name).fetchone()
         if d is None:
-            dbconn.execute(sql('insert into userinfo(u, utp, name, value) '
+            dbconn.execute(sql('insert into plugin_userinfo'
+                               '(u, utp, name, value) '
                                'values (:u, :utp, :name, :value)'),
                            u=u,
                            utp=utp,
                            name=name,
                            value=value)
         else:
-            dbconn.execute(sql('update userinfo set value=:value where '
+            dbconn.execute(sql('update plugin_userinfo set value=:value where '
                                'u=:u and utp=:utp and name=:name'),
                            u=u,
                            utp=utp,

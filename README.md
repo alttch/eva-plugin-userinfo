@@ -1,7 +1,7 @@
 # eva-plugin-userinfo
 
 User info plugin for [EVA ICS](https://www.eva-ics.com/). Provides simple
-key-value storage for extended user information.
+key-value storage for extended user information for EVA ICS user db.
 
 ## Installation
 
@@ -13,13 +13,11 @@ enjoy
 Example (/opt/eva/etc/\<controller\>.ini):
 
 ```ini
-[userinfo]
-db = runtime/db/userinfo.db
+[plugin.userinfo]
 rw = name,email
 ro = job
 ```
 
-* db - required, relative path to SQLite database or SQLAlchemy DB uri
 * rw - read-write fields (allowed to set by user)
 * ro - read-only fields (allowed to set with master key only)
 
