@@ -1,0 +1,21 @@
+controller:
+  lm/{{ srv }}:
+    plugins:
+      userinfo:
+        #src: https://raw.githubusercontent.com/alttch/eva-plugin-userinfo/master/userinfo.py
+        src: userinfo.py
+        config:
+          restart_local_sfa: true
+          rw:
+            - name
+            - email
+          ro:
+            - position
+    after-deploy:
+      - api: shutdown_core
+      - function: sleep
+        args: [ 5 ]
+    after-undeploy:
+      - api: shutdown_core
+      - function: sleep
+        args: [ 5 ]

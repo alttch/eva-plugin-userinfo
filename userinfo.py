@@ -7,6 +7,7 @@ import eva.pluginapi as pa
 import sqlalchemy as sa
 import threading
 import msgpack
+import os
 
 from neotasker import g
 
@@ -14,12 +15,32 @@ sql = sa.text
 
 from types import SimpleNamespace
 db_lock = threading.RLock()
-flags = SimpleNamespace(ready=False)
+flags = SimpleNamespace(ready=False, products=['uc', 'lm', 'sfa'])
 
 ro_fields = []
 rw_fields = []
 
 logger = pa.get_logger()
+
+
+def install(config, **kwargs):
+    c = {}
+    for f in ['rw', 'ro']:
+        x = config.get(f, [])
+        # remove for eva 3.4
+        if isinstance(x, list):
+            x = ','.join(x)
+        c[f] = x
+    if config.get('restart_local_sfa'):
+        logger.warning('Restarting local SFA instance')
+        os.system(
+            f'sleep 3 && {pa.get_directory("eva")}/bin/eva sfa server restart &'
+        )
+    try:
+        del config['restart_local_sfa']
+    except:
+        pass
+    return {'uc': c, 'lm': c, 'sfa': c}
 
 
 def init(config, **kwargs):
