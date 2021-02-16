@@ -52,7 +52,7 @@ def before_start(**kwargs):
 class APIFuncs(pa.APIX):
 
     @pa.api_log_d
-    def get_field(self, **kwargs):
+    def get(self, **kwargs):
         k, u, utp, name = pa.parse_function_params(kwargs, 'kupn', 'S..S')
         if u is not None:
             if not pa.key_check(k, master=True):
@@ -77,7 +77,7 @@ class APIFuncs(pa.APIX):
         return {name: msgpack.loads(d.value, raw=False) if d else None}
 
     @pa.api_log_i
-    def set_field(self, **kwargs):
+    def set(self, **kwargs):
         k, u, utp, name, value = pa.parse_function_params(
             kwargs, 'kupnv', 'S..Ss')
         if u is not None:
