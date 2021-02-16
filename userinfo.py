@@ -14,7 +14,7 @@ sql = sa.text
 
 from types import SimpleNamespace
 db_lock = threading.RLock()
-flags = SimpleNamespace(ready=False, db=None)
+flags = SimpleNamespace(ready=False)
 
 ro_fields = []
 rw_fields = []

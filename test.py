@@ -7,7 +7,7 @@ sys.path.insert(0, '/opt/eva/lib')
 
 from eva.client.apiclient import APIClientLocal
 
-api = APIClientLocal('uc')
+api = APIClientLocal('sfa')
 code, result = api.call('test')
 assert code == 0
 
@@ -20,10 +20,10 @@ api.set_key(token)
 
 email = f'some{random.randint(1, 100000)}@domain'
 
-code, result = api.call('x_userinfo_set_field', dict(n='email', v=email))
+code, result = api.call('x_userinfo_set', dict(n='email', v=email))
 assert code == 0
 
-code, result = api.call('x_userinfo_get_field', dict(n='email'))
+code, result = api.call('x_userinfo_get', dict(n='email'))
 assert code == 0
 
 assert result['email'] == email
